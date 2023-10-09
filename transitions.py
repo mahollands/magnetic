@@ -3,7 +3,6 @@ from dataclasses import dataclass
 from typing import List, Dict
 import numpy as np
 from scipy.special import voigt_profile
-from mh.spectra import Spectrum
 from .state import State
 
 __all__ = ["Multiplet"]
@@ -77,7 +76,7 @@ class Multiplet:
         for tr in self.transitions(B, T=T):
             x_line, gf_, lS, uS, dmJ, boltz = tr
             rot_factor = sin2psi if dmJ == 0 else 1+cos2psi
-            V = voigt(x, x_line*z, res_g, res_l)
+            V = voigt_profile(x-x_line*z, sigma=res_g/2.355, gamma=res_l/2)
             yield boltz*gf_*rot_factor * V
 
     def profile(self, B, x, strength, res_l, res_g, psi=1, T=6000., rv=0):
@@ -93,5 +92,4 @@ class Multiplet:
         rv: radial velocity [km/s]
         """
         ylines = sum(self.line_profile(B, x, res_l, res_g, psi, T, rv))
-        y = np.exp(-strength*ylines)
-        return Spectrum(x, y, 0, y_unit="", wave='vac')
+        return np.exp(-strength*ylines)
