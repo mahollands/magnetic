@@ -76,7 +76,7 @@ class Multiplet:
         for tr in self.transitions(B, T=T):
             x_line, gf_, lS, uS, dmJ, boltz = tr
             rot_factor = sin2psi if dmJ == 0 else 1+cos2psi
-            V = voigt_profile(x-x_line*z, sigma=res_g/2.355, gamma=res_l/2)
+            V = voigt_profile(x-x_line*z, res_g/2.355, res_l/2)
             yield boltz*gf_*rot_factor * V
 
     def profile(self, B, x, strength, res_l, res_g, psi=1, T=6000., rv=0):
