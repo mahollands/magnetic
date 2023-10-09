@@ -100,8 +100,8 @@ atomic_data['Ca 4227'] = Multiplet(
 #Ca HK
 atomic_data['Ca HK'] = Multiplet(
     Upper_states = [
-        State(25414.40, 1.5, 1.0, 0.5),
-        State(25191.51, 0.5, 1.0, 0.5),
+        State(25414.40, 3/2, 1, 1/2),
+        State(25191.51, 1/2, 1, 1/2),
     ],
     Lower_states = [
         State(0.0, 1/2, 0, 1/2),
