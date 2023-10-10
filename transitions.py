@@ -53,16 +53,15 @@ class Multiplet:
             if abs(uS.J - lS.J) > 1: #dJ selection rule
                 continue
 
-            u_substates, l_substates = uS.energies(B), lS.energies(B)
+            l_substates, u_substates = lS.energies(B), uS.energies(B)
 
             total_strength = sum(self.relative_strength(lS.J, uS.J, ls.mJ, us.mJ) \
-                for us, ls in product(u_substates, l_substates))
+                for ls, us in product(l_substates, u_substates))
 
             gf0 = 10**self.log_gf[lS.J, uS.J]
 
             for ls, us in product(l_substates, u_substates):
-                dmJ = us.mJ - ls.mJ
-                if abs(dmJ) > 1: #dmJ selection rule
+                if abs(dmJ := int(us.mJ - ls.mJ)) > 1: #dmJ selection rule
                     continue
                 boltz = np.exp(-ls.k/(0.695*T))
                 w_line = 1e8/(us.k - ls.k)

@@ -1,11 +1,10 @@
 import functools
-from dataclasses import dataclass
 from collections import namedtuple
+from fractions import Fraction
 import numpy as np
 
 SubState = namedtuple("SubState", "mJ k")
 
-@dataclass(frozen=True)
 class State:
     """
     This class is an energy level requiring 4 quantities:
@@ -32,24 +31,28 @@ class State:
     'splittings' and 'energies' do not require an mJ value,
     but return a list of (mJ, dk) or (mJ, k) tuples.
     """
-    k0: float
-    J: float
-    L: int
-    S: float
+    def __init__(self, k0, J, L, S):
+        self.k0 = float(k0)
+        self.J = Fraction(J)
+        self.L = int(L)
+        self.S = Fraction(S)
 
-    def __post_init__(self):
-        """
-        Check J L S values are okay
-        """
         if any(X < 0 for X in self.JLS):
             raise ValueError("JLS must be non-negative")
-        if self.J not in np.arange(abs(self.L-self.S), self.L+self.S+0.5, 1.0):
+        if self.J not in np.arange(abs(self.L-self.S), self.L+self.S+1):
             raise ValueError("Invalid JLS combination")
 
 
+    def __repr__(self):
+        Jdiv2 = "/2" if self.J.denominator == 2 else ""
+        Sdiv2 = "/2" if self.S.denominator == 2 else ""
+        Jstr = f"{self.J.numerator}{Jdiv2}"
+        Sstr = f"{self.S.numerator}{Sdiv2}"
+        return f"State({self.k0}, {Jstr}, {self.L}, {Sstr})"
+
     def __str__(self):
         """
-        Returns a formatted Ket string as "|(2S+1)L_J>"
+        String conversion is given as a formatted Ket string, i.e. "|(2S+1)L_J>"
         """
         llist = 'SPDFGHIJ'
         if self.L >= len(llist):
@@ -57,28 +60,28 @@ class State:
         suplist, sublist = '⁰¹²³⁴⁵⁶⁷⁸⁹', '₀₁₂₃₄₅₆₇₈₉'
         ss = suplist[self.S_multiplicity]
         ll = llist[self.L]
-        jj = f"{sublist[int(self.J)]}" if (self.J % 1.0 == 0.0) else \
-            f"{sublist[int(2*self.J)]}⸝₂"
+        div2 = "⸝₂" if self.J.denominator == 2 else ""
+        jj = f"{sublist[self.J.numerator]}{div2}"
         return f"|{ss}{ll}{jj}⟩"
 
     @property
     def J_multiplicity(self):
-        return int(2*self.J)+1
+        return int(2*self.J+1)
 
     @property
     def S_multiplicity(self):
-        return int(2*self.S)+1
+        return int(2*self.S+1)
 
     @functools.cached_property
     def g(self):
         if self.S == 0:
-            return 1
+            return Fraction(1, 1)
         if self.L == 0:
-            return 2
+            return Fraction(2, 1)
         if self.L == self.S:
-            return 3/2
+            return Fraction(3, 2)
         if self.J == 0:
-            return 0
+            return Fraction(0, 1)
         JJ1, LL1, SS1 = (X*(X+1) for X in self.JLS)
         return 1 + (JJ1 + SS1 - LL1) / (2*JJ1)
 
@@ -94,13 +97,13 @@ class State:
         """
         Property to get all values of mJ between -mJ and +mJ
         """
-        return np.arange(-self.J, self.J+0.5, 1.0)
+        return np.arange(-self.J, self.J+1)
 
     def splitting(self, mJ, B):
         """
         For a specific mJ and field strength B in kG, calculate the energy shift in 1/cm
         """
-        return 0.046686 * B * mJ * self.g
+        return 0.046686 * B * float(mJ * self.g)
 
     def splittings(self, B):
         """
