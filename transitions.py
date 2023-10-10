@@ -1,3 +1,7 @@
+"""
+Contains a class for dealing with multiplets between an levels, determining the
+Zeeman splitting, and constructing synthetic line profiles.
+"""
 from itertools import product
 from dataclasses import dataclass
 from typing import List, Dict
@@ -9,10 +13,15 @@ __all__ = ["Multiplet"]
 
 @dataclass(frozen=True)
 class Multiplet:
+    """
+    Multiplet class, containing lists of lower and upper states, and oscillator
+    strengths (log[gf]) between them.
+    """
+
     Lower_states: List[State]
     Upper_states: List[State]
     log_gf: Dict[tuple,float]
-    
+
     @property
     def Upper_and_Lower_states(self):
         return self.Upper_states, self.Lower_states
@@ -41,14 +50,18 @@ class Multiplet:
 
         if dJ == 0:
             return mi**2 if dm == 0 else (Ji-m_)*(Ji+m_+1)/4
-        elif dJ == 1:
+        if dJ == 1:
             return (Ji+1)**2 - mi**2 if dm == 0 else (Ji+m_+1)*(Ji+m_+2)/4
-        elif dJ == -1:
+        if dJ == -1:
             return Ji**2 - mi**2 if dm == 0 else (Ji-m_)*(Ji-m_-1)/4
-        else:
-            raise ValueError
-        
+        raise ValueError
+
     def transitions(self, B, T=6000.):
+        """
+        Generator for components in a Zeeman multiplet for an input field strength.
+        Temperature can also be used to obtain a Boltzman factor from the lower
+        energy.
+        """
         for uS, lS in self.states_outer_product():
             if abs(uS.J - lS.J) > 1: #dJ selection rule
                 continue
@@ -70,10 +83,13 @@ class Multiplet:
                 yield w_line, gf_, lS, uS, dmJ, boltz
 
     def line_profile(self, B, x, res_l, res_g, psi, T, rv):
+        """
+        Generator for line profiles of components in the Zeeman multiplet.
+        """
         z = 1 + rv/2.998e5
         cos2psi, sin2psi = np.cos(psi)**2, np.sin(psi)**2
         for tr in self.transitions(B, T=T):
-            x_line, gf_, lS, uS, dmJ, boltz = tr
+            x_line, gf_, *_, dmJ, boltz = tr
             rot_factor = sin2psi if dmJ == 0 else 1+cos2psi
             V = voigt_profile(x-x_line*z, res_g/2.355, res_l/2)
             yield boltz*gf_*rot_factor * V

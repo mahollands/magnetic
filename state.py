@@ -1,3 +1,7 @@
+"""
+Classes for dealing with atomic states
+"""
+
 import functools
 from collections import namedtuple
 from fractions import Fraction
@@ -74,6 +78,9 @@ class State:
 
     @functools.cached_property
     def g(self):
+        """
+        Lande g-factor. Calculated as a fraction.
+        """
         if self.S == 0:
             return Fraction(1, 1)
         if self.L == 0:
@@ -124,4 +131,3 @@ class State:
         for all substates mJ
         """
         return [SubState(mJ, self.energy(mJ, B)) for mJ in self.mJs]
-

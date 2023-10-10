@@ -1,3 +1,7 @@
+"""
+Atomic data for common metal line multiplets are defined here. You can
+create additional multiplets using the Multiplets class.
+"""
 from .state import State
 from .transitions import Multiplet
 
@@ -60,8 +64,8 @@ atomic_data['Al i'] = Multiplet(
         State(25347.756, 1/2, 0, 1/2),
     ],
     Lower_states = [
-        State(  0.000, 1/2, 1, 1/2), 
-        State(112.061, 3/2, 1, 1/2), 
+        State(  0.000, 1/2, 1, 1/2),
+        State(112.061, 3/2, 1, 1/2),
     ],
     log_gf = {
         (1/2, 1/2) : -0.623,
@@ -203,11 +207,11 @@ atomic_data['Fe 5300'] = Multiplet(
         State(26550.479, 0, 2, 2),
     ],
     Lower_states = [
-        State(6928.268, 5, 3, 2), 
-        State(7376.764, 4, 3, 2), 
-        State(7728.060, 3, 3, 2), 
-        State(7985.785, 2, 3, 2), 
-        State(8154.714, 1, 3, 2), 
+        State(6928.268, 5, 3, 2),
+        State(7376.764, 4, 3, 2),
+        State(7728.060, 3, 3, 2),
+        State(7985.785, 2, 3, 2),
+        State(8154.714, 1, 3, 2),
     ],
     log_gf = {
         (5, 4) : -1.321, #5271.00
