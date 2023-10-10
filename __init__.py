@@ -2,7 +2,7 @@
 Module for calculating Zeeman splitting in the low field approximation
 """
 __author__ = "Mark Hollands"
-__email__ = "M.Hollands.1@warwick.ac.uk"
+__email__ = "m.hollands@sheffield.ac.uk"
 
 from .state import *
 from .transitions import *
