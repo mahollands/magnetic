@@ -193,7 +193,6 @@ atomic_data['Fe 4400'] = Multiplet(
         (4, 5) :  0.200, #4384.78
         (3, 4) : -0.142, #4405.99
         (2, 3) : -0.615, #4416.36
-        (3, 2) : -5.000, #dummy line (there is no 3->2 transition)
     }
 )
 

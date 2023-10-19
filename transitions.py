@@ -3,7 +3,7 @@ Contains a class for dealing with multiplets between an levels, determining the
 Zeeman splitting, and constructing synthetic line profiles.
 """
 from itertools import product
-from dataclasses import dataclass
+from collections import defaultdict
 from typing import List, Dict
 import numpy as np
 from scipy.special import voigt_profile
@@ -11,16 +11,20 @@ from .state import State
 
 __all__ = ["Multiplet"]
 
-@dataclass(frozen=True)
 class Multiplet:
     """
     Multiplet class, containing lists of lower and upper states, and oscillator
     strengths (log[gf]) between them.
     """
 
-    Lower_states: List[State]
-    Upper_states: List[State]
-    log_gf: Dict[tuple,float]
+    def __init__(self, 
+        Lower_states: List[State],
+        Upper_states: List[State],
+        log_gf: Dict[tuple,float],
+    ):
+        self.Lower_states = Lower_states 
+        self.Upper_states = Upper_states 
+        self.log_gf = log_gf
 
     @property
     def Upper_and_Lower_states(self):
@@ -33,6 +37,13 @@ class Multiplet:
     def states_outer_product(self):
         return product(self.Upper_states, self.Lower_states)
 
+    @property
+    def log_gf(self):
+        return self._log_gf
+
+    @log_gf.setter
+    def log_gf(self, value):
+        self._log_gf = defaultdict(lambda: -10.0, value)
 
     @staticmethod
     def relative_strength(Ji, Jf, mi, mf):
