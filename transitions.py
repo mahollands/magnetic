@@ -74,9 +74,8 @@ class Multiplet:
         energy.
         """
         for uS, lS in self.states_outer_product():
-            if abs(uS.J - lS.J) > 1: #dJ selection rule
+            if abs(dJ := uS.J - lS.J) > 1: #dJ selection rule
                 continue
-
             if (uS.J, lS.J) == (0, 0): #J=0 to J=0 transitions forbidden
                 continue
 
@@ -88,7 +87,9 @@ class Multiplet:
             gf0 = 10**self.log_gf[lS.J, uS.J]
 
             for ls, us in product(l_substates, u_substates):
-                if abs(dmJ := int(us.mJ - ls.mJ)) > 1: #dmJ selection rule
+                if abs(dmJ := int(us.mJ - ls.mJ)) > 1: #dmJ selection rules
+                    continue
+                if dJ == 0 and (ls.mJ, us.mJ) == (0, 0):
                     continue
                 boltz = np.exp(-ls.k/(0.695*T))
                 w_line = 1e8/(us.k - ls.k)
