@@ -17,13 +17,13 @@ class Multiplet:
     strengths (log[gf]) between them.
     """
 
-    def __init__(self, 
+    def __init__(self,
         Lower_states: List[State],
         Upper_states: List[State],
         log_gf: Dict[tuple,float],
     ):
-        self.Lower_states = Lower_states 
-        self.Upper_states = Upper_states 
+        self.Lower_states = Lower_states
+        self.Upper_states = Upper_states
         self.log_gf = log_gf
 
     @property
@@ -75,6 +75,9 @@ class Multiplet:
         """
         for uS, lS in self.states_outer_product():
             if abs(uS.J - lS.J) > 1: #dJ selection rule
+                continue
+
+            if (uS.J, lS.J) == (0, 0): #J=0 to J=0 transitions forbidden
                 continue
 
             l_substates, u_substates = lS.energies(B), uS.energies(B)
